@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Student CRUD Application</title>
+    <style>
+      table {
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        border: 1px solid black;
+        padding: 5px;
+      }
+      table {
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        border: 1px solid black;
+        padding: 5px;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+        font-family: Arial, sans-serif;
+      }
+
+      h1 {
+        color: #003399;
+      }
+
+      form,
+      table {
+        background-color: white;
+        border: 1px solid #003399;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      label,
+      input,
+      select {
+        margin-bottom: 10px;
+      }
+
+      button {
+        background-color: #003399;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        transition-duration: 0.4s;
+        cursor: pointer;
+        border-radius: 5px;
+        box-shadow: 0 9px #999;
+      }
+
+      button:hover {
+        background-color: #0047b3;
+        color: white;
+      }
+
+      button:active {
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      th {
+        background-color: #003399;
+        color: white;
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 400px;
+        max-width: 80%;
+        border-radius: 5px;
+      }
+
+      /* End of Modal Styles */
+    </style>
+  </head>
+  <body>
+    <h1>Student CRUD Application</h1>
+
+    <form id="studentForm">
+      <label for="studentNumber">Student Number:</label>
+      <br />
+      <input type="text" id="studentNumber" required />
+      <br />
+      <label for="firstName">First Name:</label>
+      <br />
+      <input type="text" id="firstName" required />
+      <br />
+      <label for="lastName">Last Name:</label>
+      <br />
+      <input type="text" id="lastName" required />
+      <br />
+      <label for="email">Email:</label>
+      <br />
+      <input type="email" id="email" required />
+      <br />
+      <label for="course">Course:</label>
+      <br />
+      <select id="course" required>
+        <option value="">Select Course</option>
+        <option value="Computer Science">Computer Science</option>
+        <option value="Business Information Technology">
+          Business Information Technology
+        </option>
+        <option value="Computer Technology">Computer Technology</option>
+      </select>
+      <br />
+      <label for="dateEnrolled">Date Enrolled:</label>
+      <br />
+      <input type="date" id="dateEnrolled" required />
+      <br />
+      <label>Grading Period:</label>
+      <br />
+      <label for="prelim">
+        <input
+          type="radio"
+          id="prelim"
+          name="gradingPeriod"
+          value="Prelim"
+          required
+        />Prelim
+      </label>
+      <br />
+      <label for="midterm">
+        <input
+          type="radio"
+          id="midterm"
+          name="gradingPeriod"
+          value="Midterm"
+          required
+        />Midterm
+      </label>
+      <br />
+      <label for="finals">
+        <input
+          type="radio"
+          id="finals"
+          name="gradingPeriod"
+          value="Finals"
+          required
+        />Finals
+      </label>
+      <br />
+      <button type="submit">Add Student</button>
+    </form>
+
+    <table id="studentTable">
+      <thead>
+        <tr>
+          <th>Student Number</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Course</th>
+          <th>Date Enrolled</th>
+          <th>Grading Period</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="studentList"></tbody>
+    </table>
+
+    <!-- <button id="refreshButton">Refresh</button> -->
+
+    <!-- Modal HTML -->
+    <div id="editModal" class="modal">
+      <div class="modal-content">
+        <form id="editForm">
+          <label for="editStudentNumber">Student Number:</label>
+          <br />
+          <input type="text" id="editStudentNumber" required />
+          <br />
+          <label for="editFirstName">First Name:</label>
+          <br />
+          <input type="text" id="editFirstName" required />
+          <br />
+          <label for="editLastName">Last Name:</label>
+          <br />
+          <input type="text" id="editLastName" required />
+          <br />
+          <label for="editEmail">Email:</label>
+          <br />
+          <input type="email" id="editEmail" required />
+          <br />
+          <label for="editCourse">Course:</label>
+          <br />
+          <select id="editCourse" required>
+            <option value="">Select Course</option>
+            <option value="Computer Science">Computer Science</option>
+            <option value="Business Information Technology">
+              Business Information Technology
+            </option>
+            <option value="Computer Technology">Computer Technology</option>
+          </select>
+          <br />
+          <label for="editDateEnrolled">Date Enrolled:</label>
+          <br />
+          <input type="date" id="editDateEnrolled" required />
+          <br />
+          <label>Grading Period:</label>
+          <br />
+          <label for="editPrelim">
+            <input
+              type="radio"
+              id="editPrelim"
+              name="editGradingPeriod"
+              value="Prelim"
+              required
+            />Prelim
+          </label>
+          <br />
+          <label for="editMidterm">
+            <input
+              type="radio"
+              id="editMidterm"
+              name="editGradingPeriod"
+              value="Midterm"
+              required
+            />Midterm
+          </label>
+          <br />
+          <label for="editFinals">
+            <input
+              type="radio"
+              id="editFinals"
+              name="editGradingPeriod"
+              value="Finals"
+              required
+            />Finals
+          </label>
+          <br />
+          <button type="button" id="confirmEditButton">Confirm</button>
+          <button type="button" id="cancelEditButton">Cancel</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+      var students = [];
+      var isEditMode = false;
+      var editIndex = -1;
+
+      var form = document.getElementById('studentForm');
+      var studentNumberInput = document.getElementById('studentNumber');
+      var firstNameInput = document.getElementById('firstName');
+      var lastNameInput = document.getElementById('lastName');
+      var emailInput = document.getElementById('email');
+      var courseInput = document.getElementById('course');
+      var dateEnrolledInput = document.getElementById('dateEnrolled');
+      var gradingPeriodInputs = document.getElementsByName('gradingPeriod');
+
+      var studentList = document.getElementById('studentList');
+      var refreshButton = document.getElementById('refreshButton');
+
+      var editModal = document.getElementById('editModal');
+      var editForm = document.getElementById('editForm');
+      var confirmEditButton = document.getElementById('confirmEditButton');
+      var cancelEditButton = document.getElementById('cancelEditButton');
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var selectedGradingPeriod;
+        for (var i = 0; i < gradingPeriodInputs.length; i++) {
+          if (gradingPeriodInputs[i].checked) {
+            selectedGradingPeriod = gradingPeriodInputs[i].value;
+            break;
+          }
+        }
+
+        var student = {
+          studentNumber: studentNumberInput.value,
+          firstName: firstNameInput.value,
+          lastName: lastNameInput.value,
+          email: emailInput.value,
+          course: courseInput.value,
+          dateEnrolled: dateEnrolledInput.value,
+          gradingPeriod: selectedGradingPeriod,
+        };
+
+        if (isEditMode) {
+          // Update student
+          axios
+            .put('/students/' + editIndex, student)
+            .then(function (response) {
+              console.log('Student updated successfully');
+              renderStudentList();
+              isEditMode = false;
+              editIndex = -1;
+            })
+            .catch(function (error) {
+              console.error('Error updating student:', error);
+            });
+        } else {
+          // Add student
+          axios
+            .post('/students', student)
+            .then(function (response) {
+              console.log('Student created successfully');
+              renderStudentList();
+            })
+            .catch(function (error) {
+              console.error('Error adding student:', error);
+            });
+        }
+
+        form.reset();
+        gradingPeriodInputs[0].checked = true;
+      });
+
+      confirmEditButton.addEventListener('click', function () {
+        var editStudentNumberInput =
+          document.getElementById('editStudentNumber');
+        var editFirstNameInput = document.getElementById('editFirstName');
+        var editLastNameInput = document.getElementById('editLastName');
+        var editEmailInput = document.getElementById('editEmail');
+        var editCourseInput = document.getElementById('editCourse');
+        var editDateEnrolledInput = document.getElementById('editDateEnrolled');
+        var editGradingPeriodInputs =
+          document.getElementsByName('editGradingPeriod');
+
+        var selectedGradingPeriod;
+        for (var i = 0; i < editGradingPeriodInputs.length; i++) {
+          if (editGradingPeriodInputs[i].checked) {
+            selectedGradingPeriod = editGradingPeriodInputs[i].value;
+            break;
+          }
+        }
+
+        var updatedStudent = {
+          studentNumber: editStudentNumberInput.value,
+          firstName: editFirstNameInput.value,
+          lastName: editLastNameInput.value,
+          email: editEmailInput.value,
+          course: editCourseInput.value,
+          dateEnrolled: editDateEnrolledInput.value,
+          gradingPeriod: selectedGradingPeriod,
+        };
+
+        axios
+          .put('/students/' + editIndex, updatedStudent)
+          .then(function (response) {
+            console.log('Student updated successfully');
+            renderStudentList();
+            editModal.style.display = 'none';
+            isEditMode = false;
+            editIndex = -1;
+          })
+          .catch(function (error) {
+            console.error('Error updating student:', error);
+          });
+      });
+
+      cancelEditButton.addEventListener('click', function () {
+        editModal.style.display = 'none';
+        isEditMode = false;
+        editIndex = -1;
+      });
+
+      function renderStudentList() {
+        axios
+          .get('/students')
+          .then(function (response) {
+            students = response.data;
+
+            studentList.innerHTML = '';
+
+            students.forEach(function (student, index) {
+              var row = document.createElement('tr');
+
+              var studentNumberCell = document.createElement('td');
+              studentNumberCell.textContent = student.studentNumber;
+              row.appendChild(studentNumberCell);
+
+              var firstNameCell = document.createElement('td');
+              firstNameCell.textContent = student.firstName;
+              row.appendChild(firstNameCell);
+
+              var lastNameCell = document.createElement('td');
+              lastNameCell.textContent = student.lastName;
+              row.appendChild(lastNameCell);
+
+              var emailCell = document.createElement('td');
+              emailCell.textContent = student.email;
+              row.appendChild(emailCell);
+
+              var courseCell = document.createElement('td');
+              courseCell.textContent = student.course;
+              row.appendChild(courseCell);
+
+              var dateEnrolledCell = document.createElement('td');
+              dateEnrolledCell.textContent = student.dateEnrolled;
+              row.appendChild(dateEnrolledCell);
+
+              var gradingPeriodCell = document.createElement('td');
+              gradingPeriodCell.textContent = student.gradingPeriod;
+              row.appendChild(gradingPeriodCell);
+
+              var actionCell = document.createElement('td');
+              var editButton = document.createElement('button');
+              editButton.textContent = 'Edit';
+              editButton.addEventListener('click', function () {
+                editStudent(index, student);
+              });
+              actionCell.appendChild(editButton);
+
+              var deleteButton = document.createElement('button');
+              deleteButton.textContent = 'Delete';
+              deleteButton.addEventListener('click', function () {
+                deleteStudent(student.id);
+              });
+              actionCell.appendChild(deleteButton);
+
+              row.appendChild(actionCell);
+
+              studentList.appendChild(row);
+            });
+          })
+          .catch(function (error) {
+            console.error('Error retrieving students:', error);
+          });
+      }
+
+      function editStudent(index, student) {
+        var editStudentNumberInput =
+          document.getElementById('editStudentNumber');
+        var editFirstNameInput = document.getElementById('editFirstName');
+        var editLastNameInput = document.getElementById('editLastName');
+        var editEmailInput = document.getElementById('editEmail');
+        var editCourseInput = document.getElementById('editCourse');
+        var editDateEnrolledInput = document.getElementById('editDateEnrolled');
+        var editGradingPeriodInputs =
+          document.getElementsByName('editGradingPeriod');
+
+        editStudentNumberInput.value = student.studentNumber;
+        editFirstNameInput.value = student.firstName;
+        editLastNameInput.value = student.lastName;
+        editEmailInput.value = student.email;
+        editCourseInput.value = student.course;
+        editDateEnrolledInput.value = student.dateEnrolled;
+
+        for (var i = 0; i < editGradingPeriodInputs.length; i++) {
+          if (editGradingPeriodInputs[i].value === student.gradingPeriod) {
+            editGradingPeriodInputs[i].checked = true;
+            break;
+          }
+        }
+
+        isEditMode = true;
+        editIndex = student.id;
+
+        editModal.style.display = 'block';
+      }
+
+      function deleteStudent(id) {
+        axios
+          .delete('/students/' + id)
+          .then(function (response) {
+            console.log('Student deleted successfully');
+            renderStudentList();
+          })
+          .catch(function (error) {
+            console.error('Error deleting student:', error);
+          });
+      }
+
+      // refreshButton.addEventListener('click', function () {
+      //   renderStudentList();
+      // });
+
+      renderStudentList();
+    </script>
+  </body>
+</html>
